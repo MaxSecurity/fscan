@@ -10,10 +10,10 @@ import (
 )
 
 func Parse(Info *HostInfo) {
+	ParseScantype(Info)
 	ParseUser(Info)
 	ParsePass(Info)
 	ParseInput(Info)
-	ParseScantype(Info)
 }
 
 func ParseUser(Info *HostInfo) {
@@ -63,7 +63,20 @@ func ParsePass(Info *HostInfo) {
 				}
 			}
 			Passwords = Info.Passwords
-
+		}
+	}
+	if UrlFile != "" {
+		urls, err := Readfile(UrlFile)
+		if err == nil {
+			TmpUrls := make(map[string]struct{})
+			for _, url := range urls {
+				if _, ok := TmpUrls[url]; !ok {
+					TmpUrls[url] = struct{}{}
+					if url != "" {
+						Urls = append(Urls, url)
+					}
+				}
+			}
 		}
 	}
 }
@@ -88,7 +101,7 @@ func Readfile(filename string) ([]string, error) {
 }
 
 func ParseInput(Info *HostInfo) {
-	if Info.Host == "" && HostFile == "" {
+	if Info.Host == "" && HostFile == "" && URL == "" && UrlFile == "" {
 		fmt.Println("Host is none")
 		flag.Usage()
 		os.Exit(0)
@@ -109,12 +122,7 @@ func ParseInput(Info *HostInfo) {
 func ParseScantype(Info *HostInfo) {
 	_, ok := PORTList[Info.Scantype]
 	if !ok {
-		fmt.Println("The specified scan type does not exist")
-		fmt.Println("-m")
-		for name := range PORTList {
-			fmt.Println("   [" + name + "]")
-		}
-		os.Exit(0)
+		showmode()
 	}
 	if Info.Scantype != "all" {
 		if Info.Ports == DefaultPorts {
@@ -155,4 +163,13 @@ func getpath() string {
 		path = strings.Join(tmp, `\`)
 	}
 	return path
+}
+
+func showmode() {
+	fmt.Println("The specified scan type does not exist")
+	fmt.Println("-m")
+	for name := range PORTList {
+		fmt.Println("   [" + name + "]")
+	}
+	os.Exit(0)
 }

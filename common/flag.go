@@ -11,13 +11,14 @@ func Banner() {
  / /_\/____/ __|/ __| '__/ _` + "`" + ` |/ __| |/ /
 / /_\\_____\__ \ (__| | | (_| | (__|   <    
 \____/     |___/\___|_|  \__,_|\___|_|\_\   
-                     fscan version: 1.5.1
+                     fscan version: 1.5.2
 `
 	print(banner)
 }
 
 func Flag(Info *HostInfo) {
 	Banner()
+	DefaultPorts += Webport
 	flag.StringVar(&Info.Host, "h", "", "IP address of the host you want to scan,for example: 192.168.11.11 | 192.168.11.11-255 | 192.168.11.11,192.168.11.12")
 	flag.StringVar(&Info.Ports, "p", DefaultPorts, "Select a port,for example: 22 | 1-65535 | 22,80,3306")
 	flag.StringVar(&Info.Command, "c", "", "exec command (ssh)")
@@ -25,10 +26,8 @@ func Flag(Info *HostInfo) {
 	flag.StringVar(&Info.Username, "user", "", "username")
 	flag.StringVar(&Info.Password, "pwd", "", "password")
 	flag.Int64Var(&Info.Timeout, "time", 3, "Set timeout")
-	flag.Int64Var(&Info.WebTimeout, "wt", 5, "Set web timeout")
 	flag.StringVar(&Info.Scantype, "m", "all", "Select scan type ,as: -m ssh")
-
-	flag.IntVar(&Threads, "t", 200, "Thread nums")
+	flag.IntVar(&Threads, "t", 600, "Thread nums")
 	flag.StringVar(&HostFile, "hf", "", "host file, -hs ip.txt")
 	flag.StringVar(&Userfile, "userf", "", "username file")
 	flag.StringVar(&Passfile, "pwdf", "", "password file")
@@ -40,8 +39,12 @@ func Flag(Info *HostInfo) {
 	flag.StringVar(&TmpOutputfile, "o", "result.txt", "Outputfile")
 	flag.BoolVar(&TmpSave, "no", false, "not to save output log")
 	flag.BoolVar(&LogErr, "debug", false, "debug mode will print more error info")
+	flag.StringVar(&URL, "u", "", "url")
+	flag.StringVar(&UrlFile, "uf", "", "url")
 	flag.StringVar(&Pocinfo.PocName, "pocname", "", "use the pocs these contain pocname, -pocname weblogic")
 	flag.StringVar(&Pocinfo.Proxy, "proxy", "", "set poc proxy, -proxy http://127.0.0.1:8080")
+	flag.StringVar(&Pocinfo.Cookie, "cookie", "", "set poc cookie")
+	flag.Int64Var(&Pocinfo.Timeout, "wt", 5, "Set web timeout")
 	flag.IntVar(&Pocinfo.Num, "Num", 20, "poc rate")
 	flag.Parse()
 }
